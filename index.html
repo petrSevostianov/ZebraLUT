@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ZebraLUT</title>
+<style>
+  body { font-family: sans-serif; text-align: center; margin-top: 2em; }
+  input { width: 4em; margin: 0.5em; }
+  button { margin-top: 1em; padding: 0.5em 1em; }
+</style>
+</head>
+<body>
+  <h2>ZebraLUT Generator</h2>
+  <button onclick="generateLUT()">Download LUT</button>
+
+  <script>
+
+    function generateLUT() {
+      const size = 33;
+      let lines = [
+        'TITLE "LUT"',
+        'LUT_3D_SIZE ' + size,
+        'DOMAIN_MIN 0.0 0.0 0.0',
+        'DOMAIN_MAX 1.0 1.0 1.0'
+      ];
+      
+      for (let b = 0; b < size; b++) {
+        for (let g = 0; g < size; g++) {
+          for (let r = 0; r < size; r++) {
+            let rMaxed = r==size-1;
+            let gMaxed = g==size-1;
+            let bMaxed = b==size-1;
+            let anyMaxed = rMaxed || gMaxed || bMaxed;
+            if (!anyMaxed) {
+              lines.push("0 0 0");
+            } else {
+              let rNormalized = r / (size - 1);
+              let gNormalized = g / (size - 1);
+              let bNormalized = b / (size - 1);
+              lines.push(`${rNormalized} ${gNormalized} ${bNormalized}`);
+            }
+          }
+        }
+      }
+
+      
+
+      const blob = new Blob([lines.join("\n")], { type: "text/plain" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `ZebraLUT.cube`;
+      a.click();
+    }
+  </script>
+</body>
+</html>
